@@ -5,8 +5,20 @@ This repository now contains a from-scratch Python conversion of the original C+
 ## Run
 
 ```bash
+# Create and activate a virtual environment (recommended)
+# Windows (PowerShell)
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+
+# macOS / Linux
+python3 -m venv .venv
+source .venv/bin/activate
+
+# Install dependencies
 pip install -r requirements.txt
-uvicorn app:app --reload
+
+# Run the app with uvicorn (production: drop --reload)
+python -m uvicorn app:app --host 0.0.0.0 --port 8080 --reload
 ```
 
 ## Endpoints
