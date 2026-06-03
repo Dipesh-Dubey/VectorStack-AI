@@ -279,7 +279,7 @@ def create_app() -> FastAPI:
 
     @app.get("/")
     async def index() -> Response:
-        index_path = Path(__file__).resolve().parents[1] / "index.html"
+        index_path = settings.root / "index.html"
         if index_path.exists():
             return FileResponse(index_path, media_type="text/html")
         return HTMLResponse("<h1>VectorDB</h1>")
