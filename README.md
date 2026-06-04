@@ -6,6 +6,9 @@ This project demonstrates how modern vector databases such as Pinecone, Weaviate
 
 ---
 
+<img width="978" height="591" alt="image" src="https://github.com/user-attachments/assets/2c3cb475-ab80-425b-979c-5ab821fc9879" />
+
+
 ## Features
 
 ### Vector Search Engine
