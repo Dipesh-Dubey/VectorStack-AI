@@ -1,344 +1,199 @@
-# VectorDB in Python
+# VectorStack-AI
 
-A fully functional **Vector Database built from scratch in Python**, featuring **HNSW**, **KD-Tree**, and **Brute Force** search algorithms, semantic document retrieval, and a complete **Retrieval-Augmented Generation (RAG)** pipeline powered by local LLMs through Ollama.
-
-This project demonstrates how modern vector databases such as Pinecone, Weaviate, Chroma, and Milvus operate internally, while providing an interactive web interface for experimentation, benchmarking, document indexing, and AI-powered question answering.
-
----
-
-<img width="978" height="591" alt="image" src="https://github.com/user-attachments/assets/2c3cb475-ab80-425b-979c-5ab821fc9879" />
-
-
-## Features
-
-### Vector Search Engine
-
-* HNSW (Hierarchical Navigable Small World) implementation from scratch
-* KD-Tree implementation from scratch
-* Brute Force nearest-neighbor search
-* Side-by-side algorithm benchmarking
-* Multiple distance metrics:
-
-  * Cosine Similarity
-  * Euclidean Distance
-  * Manhattan Distance
-
-### Semantic Search
-
-* 20 preloaded demonstration vectors across multiple domains
-* Real-time nearest-neighbor retrieval
-* Semantic similarity exploration
-* PCA-based visualization of vector space
-
-### Document Intelligence
-
-* Automatic document chunking
-* 250-word chunks with 30-word overlap
-* Embedding generation using Ollama
-* Vector indexing for semantic retrieval
-* Document management APIs
-
-### RAG Pipeline
-
-* Question embedding generation
-* Context retrieval using HNSW
-* Local LLM response generation
-* Fully offline AI workflow
-* No external API dependencies
-
-### REST API
-
-* CRUD operations for vectors
-* Document ingestion and retrieval
-* Search and benchmarking endpoints
-* HNSW graph inspection
-* Ollama integration endpoints
-* System statistics and monitoring
-
----
+VectorStack-AI is a pure Python vector database and local RAG application. It
+provides an interactive browser UI for experimenting with vector search,
+document retrieval, and question answering through Ollama.
 
 ## Architecture
 
+The application has one Python backend and one static frontend:
+
 ```text
-Your Document
-      │
-      ▼
-Ollama Embeddings
-(nomic-embed-text)
-      │
-      ▼
-Document Chunking
-250 words + overlap
-      │
-      ▼
-HNSW Index (Python)
-      │
-      ▼
-Semantic Retrieval
-Top-K Relevant Chunks
-      │
-      ▼
-Ollama LLM
-(llama3.2)
-      │
-      ▼
-Generated Answer
+Browser (index.html)
+        │ HTTP
+        ▼
+FastAPI / Uvicorn (app.py)
+        │
+        ├── VectorDB
+        │   ├── Brute Force
+        │   ├── KD-Tree
+        │   └── HNSW
+        │
+        └── DocumentDB / RAG service
+            ├── document chunking
+            ├── Ollama nomic-embed-text embeddings
+            ├── similarity retrieval
+            └── Ollama llama3.2 answers
 ```
 
----
+All vector indexes and distance calculations are implemented in Python. The
+application does not require a compiler or a native vector database.
+
+## Features
+
+- Brute Force, KD-Tree, and HNSW nearest-neighbor search.
+- Euclidean, cosine, and Manhattan distance metrics.
+- Vector insertion, deletion, listing, search, benchmarking, and HNSW
+  inspection.
+- Document chunking into 250-word chunks with 30-word overlap.
+- Local embeddings with `nomic-embed-text`.
+- Similarity-based document retrieval and RAG answers with `llama3.2`.
+- A browser UI for vector visualization, document management, and RAG.
+
+## Technology Stack
+
+- Python 3.10+
+- FastAPI and Pydantic
+- Uvicorn
+- NumPy
+- Requests
+- Ollama
+- HTML, CSS, and JavaScript frontend
 
 ## Project Structure
 
 ```text
-VectorDB-Python/
-│
-├── app.py                # Main FastAPI application
-├── index.html            # Frontend UI
-├── requirements.txt      # Python dependencies
-│
-├── algorithms/
-│   ├── hnsw.py
-│   ├── kdtree.py
-│   └── bruteforce.py
-│
-├── database/
-│   ├── vectordb.py
-│   └── documentdb.py
-│
-├── services/
-│   ├── embeddings.py
-│   ├── rag.py
-│   └── ollama_client.py
-│
-└── README.md
+Your-OWN-AI-main/
+├── app.py                         # Python FastAPI entrypoint
+├── index.html                     # Browser frontend
+├── requirements.txt
+└── vectordb/
+    ├── app.py                     # Application exports
+    ├── config.py                  # Runtime settings
+    ├── algorithms/
+    │   ├── bruteforce.py
+    │   ├── kdtree.py
+    │   └── hnsw.py
+    ├── api/
+    │   └── routes.py              # FastAPI models and endpoints
+    ├── database/
+    │   ├── vector_db.py
+    │   └── document_db.py
+    ├── models/
+    ├── services/
+    │   ├── chunker.py
+    │   ├── ollama_client.py
+    │   └── rag_service.py
+    └── utils/
+        └── metrics.py
 ```
-
----
-
-## Requirements
-
-### Software
-
-* Python 3.10+
-* Ollama
-* Git
-
-### Ollama Models
-
-Pull the required models:
-
-```bash
-ollama pull nomic-embed-text
-ollama pull llama3.2
-```
-
-Verify installation:
-
-```bash
-ollama list
-```
-
----
 
 ## Installation
 
-### Clone Repository
+Create and activate a virtual environment:
 
-```bash
-git clone https://github.com/YOUR_USERNAME/VectorDB-Python.git
-
-cd VectorDB-Python
-```
-
-### Create Virtual Environment
-
-#### Windows (PowerShell)
+### Windows PowerShell
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 ```
 
-#### macOS / Linux
+### macOS or Linux
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-### Install Dependencies
+Install the Python dependencies:
 
 ```bash
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
----
+Install Ollama separately, then download the models used by the RAG pipeline:
 
-## Running the Application
+```bash
+ollama pull nomic-embed-text
+ollama pull llama3.2
+```
 
-Start Ollama:
+## Running
+
+Start Ollama if it is not already running:
 
 ```bash
 ollama serve
 ```
 
-Run the FastAPI server:
+From the project directory, start the Python backend:
 
 ```bash
-python -m uvicorn app:app \
-  --host 0.0.0.0 \
-  --port 8080 \
-  --reload
+python -m uvicorn app:app --host 0.0.0.0 --port 8080
 ```
 
-Open:
+Open [http://localhost:8080](http://localhost:8080) in a browser. The
+frontend sends its requests to this FastAPI server.
 
-```text
-http://localhost:8080
+## API
+
+### Vector endpoints
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| GET | `/search?v=...&k=5&metric=cosine&algo=hnsw` | K-nearest-neighbor search |
+| POST | `/insert` | Insert a vector |
+| DELETE | `/delete/{id}` | Delete a vector |
+| GET | `/items` | List vectors |
+| GET | `/benchmark?v=...&k=5&metric=cosine` | Compare all algorithms |
+| GET | `/hnsw-info` | Inspect the HNSW graph |
+| GET | `/stats` | Vector database statistics |
+
+Example vector insertion:
+
+```bash
+curl -X POST http://localhost:8080/insert \
+  -H "Content-Type: application/json" \
+  -d '{"metadata":"example","category":"demo","embedding":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}'
 ```
 
----
+### Document and RAG endpoints
 
-## API Endpoints
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| POST | `/doc/insert` | Chunk, embed, and store a document |
+| DELETE | `/doc/delete/{id}` | Delete a document chunk |
+| GET | `/doc/list` | List stored documents |
+| POST | `/doc/search` | Embed a question and retrieve contexts |
+| POST | `/doc/ask` | Retrieve contexts and generate an answer |
+| GET | `/status` | Ollama and database status |
 
-### Vector Search
+Insert a document:
 
-| Method | Endpoint     | Description           |
-| ------ | ------------ | --------------------- |
-| GET    | /search      | K-NN vector search    |
-| POST   | /insert      | Insert vector         |
-| DELETE | /delete/{id} | Delete vector         |
-| GET    | /items       | List vectors          |
-| GET    | /benchmark   | Compare algorithms    |
-| GET    | /hnsw-info   | HNSW graph statistics |
-| GET    | /stats       | Database statistics   |
+```bash
+curl -X POST http://localhost:8080/doc/insert \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Example","text":"Vector databases retrieve similar embeddings."}'
+```
 
-### Documents
+Ask a question:
 
-| Method | Endpoint         |
-| ------ | ---------------- |
-| POST   | /doc/insert      |
-| DELETE | /doc/delete/{id} |
-| GET    | /doc/list        |
-| POST   | /doc/search      |
+```bash
+curl -X POST http://localhost:8080/doc/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question":"What do vector databases retrieve?","k":3}'
+```
 
-### RAG
+### Ollama proxy endpoints
 
-| Method | Endpoint |
-| ------ | -------- |
-| POST   | /doc/ask |
-| GET    | /status  |
+`GET /api/tags`, `POST /api/embeddings`, and `POST /api/generate` proxy the
+corresponding local Ollama APIs.
 
-### Ollama-Compatible APIs
+## Search Algorithms and Metrics
 
-| Method | Endpoint        |
-| ------ | --------------- |
-| GET    | /api/tags       |
-| POST   | /api/embeddings |
-| POST   | /api/generate   |
+`VectorDB` keeps the custom Brute Force, KD-Tree, and HNSW implementations
+available through the `algo` query parameter. Search uses the selected
+Euclidean, cosine, or Manhattan distance function. Document retrieval uses
+cosine distance and selects Brute Force for small collections and HNSW for
+larger collections.
 
----
+## RAG Flow
 
-## Search Algorithms
+Documents are split into overlapping chunks, embedded with
+`nomic-embed-text`, and stored in `DocumentDB`. A question is embedded with the
+same model, relevant chunks are retrieved by similarity, and the chunks are
+included in a prompt sent to `llama3.2`.
 
-### HNSW
-
-Hierarchical Navigable Small World graphs provide near-logarithmic search complexity and power many modern vector databases.
-
-Advantages:
-
-* Extremely fast approximate search
-* Scales to millions of vectors
-* Excellent high-dimensional performance
-
-### KD-Tree
-
-A binary space-partitioning structure that performs efficient exact nearest-neighbor search in lower-dimensional spaces.
-
-Advantages:
-
-* Exact results
-* Efficient for low-dimensional vectors
-* Memory efficient
-
-### Brute Force
-
-Computes distances against every vector.
-
-Advantages:
-
-* Always exact
-* Useful as a baseline benchmark
-* Simple and predictable
-
----
-
-## Why HNSW?
-
-As vector dimensionality increases, KD-Tree pruning becomes less effective due to the curse of dimensionality.
-
-HNSW avoids this limitation by navigating a graph structure rather than partitioning geometric space, making it the preferred choice for high-dimensional embedding search.
-
----
-
-## Technology Stack
-
-### Backend
-
-* Python
-* FastAPI
-* NumPy
-* Uvicorn
-
-### AI & Retrieval
-
-* Ollama
-* nomic-embed-text
-* llama3.2
-
-### Algorithms
-
-* HNSW
-* KD-Tree
-* Brute Force
-
-### Frontend
-
-* HTML
-* CSS
-* JavaScript
-
----
-
-## Educational Goals
-
-This project is designed to help developers understand:
-
-* How vector databases work internally
-* Approximate nearest-neighbor search
-* HNSW graph construction
-* Semantic embeddings
-* Retrieval-Augmented Generation (RAG)
-* Local LLM deployment
-* Production search system architecture
-
----
-
-## Future Improvements
-
-* Persistent storage layer
-* Hybrid keyword + vector search
-* Multi-user support
-* GPU acceleration
-* Distributed indexing
-* Metadata filtering
-* Hybrid retrieval ranking
-* Quantization and compression
-
----
-
-## License
-
-MIT License
-
-Feel free to use, modify, and extend this project for educational, research, or commercial purposes.
+If Ollama is unavailable, vector search remains available and document/RAG
+requests return an explicit availability error.

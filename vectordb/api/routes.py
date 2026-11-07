@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 from pathlib import Path
@@ -205,7 +206,7 @@ def create_app() -> FastAPI:
         chunks = chunk_text(text, settings.doc_chunk_words, settings.doc_chunk_overlap)
         ids: list[int] = []
         for index, chunk in enumerate(chunks, start=1):
-            embedding = state.ollama.embed(chunk)
+            embedding = await asyncio.to_thread(state.ollama.embed, chunk)
             if not embedding:
                 return JSONResponse(
                     content={
@@ -242,14 +243,14 @@ def create_app() -> FastAPI:
 
     @app.post("/doc/search")
     async def search_documents(body: AskDocumentRequest) -> JSONResponse:
-        result = state.rag.search(body.question, body.k)
+        result = await asyncio.to_thread(state.rag.search, body.question, body.k)
         if "error" in result:
             return JSONResponse(content=result)
         return JSONResponse(content=result)
 
     @app.post("/doc/ask")
     async def ask_documents(body: AskDocumentRequest) -> JSONResponse:
-        result = state.rag.ask(body.question, body.k)
+        result = await asyncio.to_thread(state.rag.ask, body.question, body.k)
         return JSONResponse(content=result)
 
     @app.get("/status")
